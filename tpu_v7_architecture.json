@@ -1,0 +1,463 @@
+{
+  "name": "TPU v7 (Chip Package)",
+  "specs": {
+    "Description": "Next-gen Tensor Processing Unit",
+    "Compiler Stack": "XLA, TPU-MLIR",
+    "Workloads": "vLLM, Modular/Mojo, High-scale AI"
+  },
+  "children": [
+    {
+      "name": "Host Interfaces",
+      "specs": {
+        "Type": "Host & Management"
+      },
+      "children": [
+        {
+          "name": "PCIe Gen5 x16",
+          "specs": {
+            "Connection": "Host"
+          }
+        },
+        {
+          "name": "PCIe Gen2 x1",
+          "specs": {
+            "Connection": "gBMC"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chip Manager",
+      "specs": {
+        "Function": "System Control & Power Management"
+      },
+      "children": []
+    },
+    {
+      "name": "TensorCore 0",
+      "specs": {
+        "Function": "Primary Compute Core"
+      },
+      "children": [
+        {
+          "name": "TCS",
+          "specs": {
+            "Function": "TensorCore Sequencer / Scheduler"
+          }
+        },
+        {
+          "name": "VPU + Vmem",
+          "specs": {
+            "Function": "Vector Processing Unit & Memory",
+            "Compiler Target": "Modular SIMD / Mojo, MLIR vector dialect"
+          },
+          "children": [
+            {
+              "name": "SIMD ALU",
+              "specs": {
+                "Function": "Element-wise Operations",
+                "IR Ops": "arith.addf, arith.mulf, arith.maxf"
+              }
+            },
+            {
+              "name": "Transcendental Math Unit",
+              "specs": {
+                "Function": "Complex Activations",
+                "IR Ops": "math.exp, math.log, SiLU, GELU (vLLM/XLA)",
+                "Target": "Softmax, RoPE embeddings"
+              }
+            },
+            {
+              "name": "Vector Reduction Unit",
+              "specs": {
+                "Function": "Reductions across vector lanes",
+                "IR Ops": "vector.reduction, xla.reduce_sum"
+              }
+            },
+            {
+              "name": "Vmem Load/Store",
+              "specs": {
+                "Function": "Vector Memory Access",
+                "IR Ops": "vector.transfer_read, vector.transfer_write"
+              }
+            }
+          ]
+        },
+        {
+          "name": "MXU 0",
+          "specs": {
+            "Function": "Matrix Multiply Unit",
+            "Architecture": "Systolic Array (SCALE-Sim style)"
+          },
+          "children": [
+            {
+              "name": "Systolic MAC Array",
+              "specs": {
+                "Function": "Dot Product (linalg.matmul)",
+                "Types": "BF16, FP8, INT8"
+              }
+            },
+            {
+              "name": "Accumulator Registers",
+              "specs": {
+                "Function": "FP32 Accumulation"
+              }
+            },
+            {
+              "name": "Activation / Weight FIFOs",
+              "specs": {
+                "Function": "Data pipelining"
+              }
+            }
+          ]
+        },
+        {
+          "name": "MXU 1",
+          "specs": {
+            "Function": "Matrix Multiply Unit",
+            "Architecture": "Systolic Array"
+          },
+          "children": [
+            {
+              "name": "Systolic MAC Array",
+              "specs": {
+                "Function": "Dot Product (linalg.matmul)",
+                "Types": "BF16, FP8, INT8"
+              }
+            },
+            {
+              "name": "Accumulator Registers",
+              "specs": {
+                "Function": "FP32 Accumulation"
+              }
+            },
+            {
+              "name": "Activation / Weight FIFOs",
+              "specs": {
+                "Function": "Data pipelining"
+              }
+            }
+          ]
+        },
+        {
+          "name": "XLU 0",
+          "specs": {
+            "Function": "Translation/Transform Unit",
+            "Target": "XLA/TPU-MLIR custom ops"
+          },
+          "children": [
+            {
+              "name": "Data Format Converter",
+              "specs": {
+                "IR Ops": "xla.reshape, xla.transpose, xla.cast"
+              }
+            },
+            {
+              "name": "Broadcast Unit",
+              "specs": {
+                "IR Ops": "xla.broadcast, linalg.broadcast"
+              }
+            },
+            {
+              "name": "Permute / Shuffle Unit",
+              "specs": {
+                "IR Ops": "xla.rev, vector.shuffle"
+              }
+            }
+          ]
+        },
+        {
+          "name": "XLU 1",
+          "specs": {
+            "Function": "Translation/Transform Unit"
+          },
+          "children": [
+            {
+              "name": "Data Format Converter",
+              "specs": {
+                "IR Ops": "xla.reshape, xla.transpose, xla.cast"
+              }
+            },
+            {
+              "name": "Broadcast Unit",
+              "specs": {
+                "IR Ops": "xla.broadcast, linalg.broadcast"
+              }
+            },
+            {
+              "name": "Permute / Shuffle Unit",
+              "specs": {
+                "IR Ops": "xla.rev, vector.shuffle"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TensorCore 1",
+      "specs": {
+        "Function": "Primary Compute Core"
+      },
+      "children": [
+        {
+          "name": "TCS",
+          "specs": {
+            "Function": "TensorCore Sequencer / Scheduler"
+          }
+        },
+        {
+          "name": "VPU + Vmem",
+          "specs": {
+            "Function": "Vector Processing Unit & Memory"
+          },
+          "children": [
+            {
+              "name": "SIMD ALU"
+            },
+            {
+              "name": "Transcendental Math Unit"
+            },
+            {
+              "name": "Vector Reduction Unit"
+            },
+            {
+              "name": "Vmem Load/Store"
+            }
+          ]
+        },
+        {
+          "name": "MXU 0",
+          "specs": {
+            "Function": "Matrix Multiply Unit"
+          },
+          "children": [
+            {
+              "name": "Systolic MAC Array"
+            },
+            {
+              "name": "Accumulator Registers"
+            },
+            {
+              "name": "Activation / Weight FIFOs"
+            }
+          ]
+        },
+        {
+          "name": "MXU 1",
+          "specs": {
+            "Function": "Matrix Multiply Unit"
+          },
+          "children": [
+            {
+              "name": "Systolic MAC Array"
+            },
+            {
+              "name": "Accumulator Registers"
+            },
+            {
+              "name": "Activation / Weight FIFOs"
+            }
+          ]
+        },
+        {
+          "name": "XLU 0",
+          "specs": {
+            "Function": "Translation/Transform Unit"
+          },
+          "children": [
+            {
+              "name": "Data Format Converter"
+            },
+            {
+              "name": "Broadcast Unit"
+            },
+            {
+              "name": "Permute / Shuffle Unit"
+            }
+          ]
+        },
+        {
+          "name": "XLU 1",
+          "specs": {
+            "Function": "Translation/Transform Unit"
+          },
+          "children": [
+            {
+              "name": "Data Format Converter"
+            },
+            {
+              "name": "Broadcast Unit"
+            },
+            {
+              "name": "Permute / Shuffle Unit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Memory and DMA Subsystem",
+      "specs": {
+        "Function": "Data Movement and Storage"
+      },
+      "children": [
+        {
+          "name": "Memory and DMA Interconnect",
+          "specs": {
+            "Bandwidth": "High-throughput on-chip fabric"
+          }
+        },
+        {
+          "name": "Sparse Cores",
+          "specs": {
+            "Function": "Sparse embeddings & MoE",
+            "Target": "vLLM / LLM Inference"
+          },
+          "children": [
+            {
+              "name": "Sparse Core 0",
+              "children": [
+                {
+                  "name": "Embedding Lookup Unit",
+                  "specs": {
+                    "IR Ops": "xla.gather, tensor.extract"
+                  }
+                },
+                {
+                  "name": "Sparse Router",
+                  "specs": {
+                    "IR Ops": "xla.scatter, tensor.insert"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Sparse Core 1",
+              "children": [
+                {
+                  "name": "Embedding Lookup Unit"
+                },
+                {
+                  "name": "Sparse Router"
+                }
+              ]
+            },
+            {
+              "name": "Sparse Core 2"
+            },
+            {
+              "name": "Sparse Core 3"
+            }
+          ]
+        },
+        {
+          "name": "HBM3 Subsystem",
+          "specs": {
+            "Type": "High Bandwidth Memory 3E"
+          },
+          "children": [
+            {
+              "name": "HBM3 Ctrl 0",
+              "children": [
+                {
+                  "name": "HBM3E Stack (8-hi)"
+                }
+              ]
+            },
+            {
+              "name": "HBM3 Ctrl 1",
+              "children": [
+                {
+                  "name": "HBM3E Stack (8-hi)"
+                }
+              ]
+            },
+            {
+              "name": "HBM3 Ctrl 2",
+              "children": [
+                {
+                  "name": "HBM3E Stack (8-hi)"
+                }
+              ]
+            },
+            {
+              "name": "HBM3 Ctrl 3",
+              "children": [
+                {
+                  "name": "HBM3E Stack (8-hi)"
+                }
+              ]
+            },
+            {
+              "name": "HBM3 Ctrl 4",
+              "children": [
+                {
+                  "name": "HBM3E Stack (8-hi)"
+                }
+              ]
+            },
+            {
+              "name": "HBM3 Ctrl 5",
+              "children": [
+                {
+                  "name": "HBM3E Stack (8-hi)"
+                }
+              ]
+            },
+            {
+              "name": "HBM3 Ctrl 6",
+              "children": [
+                {
+                  "name": "HBM3E Stack (8-hi)"
+                }
+              ]
+            },
+            {
+              "name": "HBM3 Ctrl 7",
+              "children": [
+                {
+                  "name": "HBM3E Stack (8-hi)"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ICI (Inter-Chip Interconnect)",
+      "specs": {
+        "Function": "Multi-chip scaling (Pod/Torus)"
+      },
+      "children": [
+        {
+          "name": "ICR Router",
+          "specs": {
+            "Function": "Routing engine for ICI"
+          }
+        },
+        {
+          "name": "6x Link stack",
+          "specs": {
+            "Function": "Inter-chip optical/electrical links"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SerDes Chiplet",
+      "specs": {
+        "Function": "High-speed serialization"
+      },
+      "children": [
+        {
+          "name": "6x 112G SerDes octals + PCS",
+          "specs": {
+            "Speed": "112 Gbps per lane"
+          }
+        }
+      ]
+    }
+  ]
+}
